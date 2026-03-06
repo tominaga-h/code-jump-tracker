@@ -1,0 +1,143 @@
+{
+  "name": "code-jump-tracker",
+  "displayName": "Code Jump Tracker",
+  "description": "VS Codeでのコードジャンプ履歴を視覚的に管理する拡張機能",
+  "version": "0.0.1",
+  "publisher": "code-jump-tracker",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeJumpTracker.pushManual",
+        "title": "Push to Tracker",
+        "category": "Code Jump Tracker"
+      },
+      {
+        "command": "codeJumpTracker.goBack",
+        "title": "Go Back",
+        "category": "Code Jump Tracker"
+      },
+      {
+        "command": "codeJumpTracker.goForward",
+        "title": "Go Forward",
+        "category": "Code Jump Tracker"
+      },
+      {
+        "command": "codeJumpTracker.clearAll",
+        "title": "Clear All History",
+        "category": "Code Jump Tracker",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "codeJumpTracker.deleteItem",
+        "title": "Delete",
+        "category": "Code Jump Tracker",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "codeJumpTracker.navigateToEntry",
+        "title": "Navigate to Entry",
+        "category": "Code Jump Tracker"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codeJumpTracker",
+          "title": "Code Jump Tracker",
+          "icon": "resources/pin.svg"
+        }
+      ]
+    },
+    "views": {
+      "codeJumpTracker": [
+        {
+          "id": "codeJumpTracker.historyLog",
+          "name": "History Log"
+        },
+        {
+          "id": "codeJumpTracker.uniqueLocations",
+          "name": "Unique Locations"
+        }
+      ]
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "codeJumpTracker.pushManual",
+          "group": "navigation@100"
+        }
+      ],
+      "editor/lineNumber/context": [
+        {
+          "command": "codeJumpTracker.pushManual",
+          "group": "navigation@100"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "codeJumpTracker.deleteItem",
+          "when": "viewItem == historyItem",
+          "group": "inline"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "codeJumpTracker.clearAll",
+          "when": "view == codeJumpTracker.historyLog || view == codeJumpTracker.uniqueLocations",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "codeJumpTracker.goBack",
+        "key": "alt+shift+left",
+        "mac": "ctrl+shift+-"
+      },
+      {
+        "command": "codeJumpTracker.goForward",
+        "key": "alt+shift+right",
+        "mac": "ctrl+shift+="
+      },
+      {
+        "command": "codeJumpTracker.pushManual",
+        "key": "alt+shift+p",
+        "mac": "ctrl+shift+p"
+      }
+    ],
+    "configuration": {
+      "title": "Code Jump Tracker",
+      "properties": {
+        "codeJumpTracker.maxHistorySize": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 500,
+          "description": "履歴の保存上限数"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "@types/vscode": "^1.85.0",
+    "@vscode/codicons": "^0.0.44",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  }
+}
