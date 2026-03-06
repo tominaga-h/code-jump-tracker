@@ -3,6 +3,7 @@ src/**
 node_modules/**
 docs/**
 .cursor/**
+images/**
 tsconfig.json
 esbuild.js
 *.map
