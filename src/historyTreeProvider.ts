@@ -5,9 +5,10 @@ import { HistoryManager } from "./historyManager";
 export class HistoryTreeItem extends vscode.TreeItem {
   constructor(
     public readonly entry: HistoryEntry,
-    public readonly entryIndex: number
+    public readonly entryIndex: number,
+    displayNumber: number
   ) {
-    super(entry.fileName, vscode.TreeItemCollapsibleState.None);
+    super(`#${displayNumber} ${entry.fileName}`, vscode.TreeItemCollapsibleState.None);
 
     const lineDisplay = `L${entry.line + 1}`;
     this.description = entry.symbolName
@@ -59,15 +60,17 @@ export class HistoryTreeDataProvider
 
     if (this.mode === "unique") {
       const unique = this.historyManager.getUniqueLocations();
-      return unique.map((entry) => {
-        const originalIndex = history.indexOf(entry);
-        return new HistoryTreeItem(entry, originalIndex);
-      });
+      return unique
+        .map((entry, i) => {
+          const originalIndex = history.indexOf(entry);
+          return new HistoryTreeItem(entry, originalIndex, i + 1);
+        })
+        .reverse();
     }
 
-    return [...history].map(
-      (entry, index) => new HistoryTreeItem(entry, index)
-    );
+    return [...history]
+      .map((entry, index) => new HistoryTreeItem(entry, index, index + 1))
+      .reverse();
   }
 
   dispose(): void {

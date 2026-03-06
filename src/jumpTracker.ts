@@ -45,8 +45,17 @@ export class JumpTracker implements vscode.Disposable {
     this.isNavigating = value;
   }
 
+  private isDiffEditor(): boolean {
+    const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab;
+    return activeTab?.input instanceof vscode.TabInputTextDiff;
+  }
+
   private handleMovement(editor: vscode.TextEditor): void {
     if (editor.document.uri.scheme !== "file") {
+      return;
+    }
+
+    if (this.isDiffEditor()) {
       return;
     }
 
