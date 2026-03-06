@@ -18,7 +18,7 @@ It provides intuitive history management in the sidebar -- similar to `pushd` / 
 
 ## Sidebar Views
 
-<img src="images/demo.png" height="400px" align="left" alt="Demo" style="margin-right: 20px" />
+<img src="images/demo.png" height="420px" align="right" alt="Demo" />
 
 ### History Log
 

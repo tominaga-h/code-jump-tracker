@@ -16,7 +16,7 @@ VS Code でのコードジャンプ履歴を視覚的に管理する拡張機能
 
 ## サイドバービュー
 
-<img src="../images/demo.png" height="400px" align="left" alt="デモ" style="margin-right: 20px" />
+<img src="../images/demo.png" height="420px" align="right" alt="Demo" />
 
 ### History Log
 
