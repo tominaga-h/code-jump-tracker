@@ -1,4 +1,4 @@
-# <img src="../resources/logo.png" width="40px" alt="ロゴ" style="margin-right: 10px" />Code Jump Tracker
+# <img src="../resources/logo.png" width="40px" align="left" alt="ロゴ" />Code Jump Tracker
 
 VS Code でのコードジャンプ履歴を視覚的に管理する拡張機能。
 シェルの `pushd` / `popd` のような直感的な履歴管理をサイドバーで提供し、複雑なコードベースでの「迷子」を防ぎます。

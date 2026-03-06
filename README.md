@@ -1,4 +1,4 @@
-# <img src="resources/logo.png" width="40px" alt="Logo" style="margin-right: 10px" />Code Jump Tracker
+# <img src="resources/logo.png" width="40px" align="left" alt="Logo" />Code Jump Tracker
 
 A VS Code extension that visually manages your code jump history.
 It provides intuitive history management in the sidebar -- similar to `pushd` / `popd` in the shell -- so you never get lost in complex codebases.
