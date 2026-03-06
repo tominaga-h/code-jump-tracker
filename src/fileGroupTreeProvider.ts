@@ -33,15 +33,32 @@ const symbolKindIconMap: Record<number, string> = {
   [vscode.SymbolKind.TypeParameter]: "symbol-type-parameter",
 };
 
-export class HistoryTreeItem extends vscode.TreeItem {
+type FileGroupTreeNode = FileGroupItem | FileEntryItem;
+
+export class FileGroupItem extends vscode.TreeItem {
+  constructor(
+    public readonly filePath: string,
+    public readonly entryCount: number
+  ) {
+    const fileName = path.basename(filePath);
+    super(fileName, vscode.TreeItemCollapsibleState.Collapsed);
+
+    this.description = `(${entryCount})`;
+    this.iconPath = new vscode.ThemeIcon("symbol-file");
+    this.tooltip = filePath;
+    this.contextValue = "fileGroupItem";
+  }
+}
+
+export class FileEntryItem extends vscode.TreeItem {
   constructor(
     public readonly entry: HistoryEntry,
     public readonly entryIndex: number
   ) {
-    const label = entry.symbolName || entry.fileName;
+    const label = entry.symbolName || `L${entry.line + 1}`;
     super(label, vscode.TreeItemCollapsibleState.None);
 
-    this.description = `${entry.fileName} (L${entry.line + 1})`;
+    this.description = `L${entry.line + 1}`;
 
     if (entry.isManual) {
       this.iconPath = new vscode.ThemeIcon("pinned");
@@ -71,63 +88,87 @@ export class HistoryTreeItem extends vscode.TreeItem {
   }
 }
 
-export class HistoryTreeDataProvider
-  implements vscode.TreeDataProvider<HistoryTreeItem>
+export class FileGroupTreeProvider
+  implements vscode.TreeDataProvider<FileGroupTreeNode>
 {
   private readonly onDidChangeTreeDataEmitter =
     new vscode.EventEmitter<void>();
   readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
 
   private readonly disposable: vscode.Disposable;
-  private sortOrder: "asc" | "desc" = "desc";
 
   constructor(private readonly historyManager: HistoryManager) {
     this.disposable = this.historyManager.onDidChange(() => {
       this.onDidChangeTreeDataEmitter.fire();
     });
-    vscode.commands.executeCommand(
-      "setContext",
-      "codeJumpTracker.sortOrder",
-      this.sortOrder
-    );
   }
 
-  toggleSortOrder(): void {
-    this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
-    vscode.commands.executeCommand(
-      "setContext",
-      "codeJumpTracker.sortOrder",
-      this.sortOrder
-    );
-    this.onDidChangeTreeDataEmitter.fire();
-  }
-
-  getTreeItem(element: HistoryTreeItem): vscode.TreeItem {
+  getTreeItem(element: FileGroupTreeNode): vscode.TreeItem {
     return element;
   }
 
-  getParent(): undefined {
+  getParent(element: FileGroupTreeNode): FileGroupItem | undefined {
+    if (element instanceof FileEntryItem) {
+      const groups = this.buildGroups();
+      const group = groups.get(element.entry.filePath);
+      if (group) {
+        return new FileGroupItem(element.entry.filePath, group.length);
+      }
+    }
     return undefined;
   }
 
-  getChildren(): HistoryTreeItem[] {
-    const history = this.historyManager.getHistory();
-    const unique = this.historyManager.getUniqueLocations();
-    const items = unique.map((entry) => {
-      const originalIndex = history.indexOf(entry);
-      return new HistoryTreeItem(entry, originalIndex);
-    });
-    if (this.sortOrder === "desc") {
-      items.reverse();
+  getChildren(element?: FileGroupTreeNode): FileGroupTreeNode[] {
+    if (!element) {
+      return this.getRootItems();
     }
+    if (element instanceof FileGroupItem) {
+      return this.getFileEntries(element.filePath);
+    }
+    return [];
+  }
+
+  private buildGroups(): Map<string, { entry: HistoryEntry; index: number }[]> {
+    const history = this.historyManager.getHistory();
+    const seen = new Set<string>();
+    const groups = new Map<
+      string,
+      { entry: HistoryEntry; index: number }[]
+    >();
+    history.forEach((entry, index) => {
+      const dedupeKey = `${entry.filePath}:${entry.line}`;
+      if (seen.has(dedupeKey)) {
+        return;
+      }
+      seen.add(dedupeKey);
+      const key = entry.filePath;
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push({ entry, index });
+    });
+    return groups;
+  }
+
+  private getRootItems(): FileGroupItem[] {
+    const groups = this.buildGroups();
+    const items: FileGroupItem[] = [];
+    for (const [filePath, entries] of groups) {
+      items.push(new FileGroupItem(filePath, entries.length));
+    }
+    items.sort((a, b) => {
+      const nameA = path.basename(a.filePath).toLowerCase();
+      const nameB = path.basename(b.filePath).toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
     return items;
   }
 
-  findItemByFilePath(filePath: string): HistoryTreeItem | undefined {
-    const normalized = path.normalize(filePath);
-    return this.getChildren().find(
-      (item) => path.normalize(item.entry.filePath) === normalized
-    );
+  private getFileEntries(filePath: string): FileEntryItem[] {
+    const groups = this.buildGroups();
+    const entries = groups.get(filePath) ?? [];
+    const sorted = [...entries].sort((a, b) => a.entry.line - b.entry.line);
+    return sorted.map((e) => new FileEntryItem(e.entry, e.index));
   }
 
   dispose(): void {

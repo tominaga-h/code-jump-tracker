@@ -8,6 +8,7 @@ import {
   HistoryTreeDataProvider,
   HistoryTreeItem,
 } from "./historyTreeProvider";
+import { FileGroupTreeProvider } from "./fileGroupTreeProvider";
 import { ActiveFileDecorationProvider } from "./activeFileDecorationProvider";
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -20,10 +21,16 @@ export function activate(context: vscode.ExtensionContext): void {
   const gutterManager = new GutterManager(historyManager, context.extensionUri);
 
   const historyLogProvider = new HistoryTreeDataProvider(historyManager);
+  const fileGroupProvider = new FileGroupTreeProvider(historyManager);
 
   const historyTreeView = vscode.window.createTreeView(
     "codeJumpTracker.historyLog",
     { treeDataProvider: historyLogProvider }
+  );
+
+  const fileGroupTreeView = vscode.window.createTreeView(
+    "codeJumpTracker.fileGroup",
+    { treeDataProvider: fileGroupProvider }
   );
 
   const activeFileDecoration = new ActiveFileDecorationProvider();
@@ -135,10 +142,12 @@ export function activate(context: vscode.ExtensionContext): void {
       historyManager.clearAll();
     }),
 
+    fileGroupTreeView,
     jumpTracker,
     gutterManager,
     historyManager,
-    historyLogProvider
+    historyLogProvider,
+    fileGroupProvider
   );
 }
 

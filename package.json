@@ -76,6 +76,10 @@
         {
           "id": "codeJumpTracker.historyLog",
           "name": "History Log"
+        },
+        {
+          "id": "codeJumpTracker.fileGroup",
+          "name": "File Group"
         }
       ]
     },
@@ -113,6 +117,11 @@
         {
           "command": "codeJumpTracker.clearAll",
           "when": "view == codeJumpTracker.historyLog",
+          "group": "navigation@2"
+        },
+        {
+          "command": "codeJumpTracker.clearAll",
+          "when": "view == codeJumpTracker.fileGroup",
           "group": "navigation@2"
         }
       ]
