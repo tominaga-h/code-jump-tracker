@@ -14,9 +14,11 @@ export class HistoryTreeItem extends vscode.TreeItem {
       ? `${lineDisplay} ${entry.symbolName}`
       : lineDisplay;
 
-    this.iconPath = entry.isManual
-      ? new vscode.ThemeIcon("pinned")
-      : new vscode.ThemeIcon("go-to-file");
+    this.resourceUri = vscode.Uri.file(entry.filePath);
+
+    if (entry.isManual) {
+      this.iconPath = new vscode.ThemeIcon("pinned");
+    }
 
     this.tooltip = `${entry.filePath}:${entry.line + 1}`;
 

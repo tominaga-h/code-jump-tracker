@@ -11,7 +11,7 @@ export class GutterManager implements vscode.Disposable {
     extensionUri: vscode.Uri
   ) {
     this.decorationType = vscode.window.createTextEditorDecorationType({
-      gutterIconPath: vscode.Uri.joinPath(extensionUri, "resources", "pin.svg"),
+      gutterIconPath: vscode.Uri.joinPath(extensionUri, "resources", "icon_pin.svg"),
       gutterIconSize: "contain",
     });
 
@@ -23,6 +23,8 @@ export class GutterManager implements vscode.Disposable {
         this.updateDecorations();
       })
     );
+
+    this.updateDecorations();
   }
 
   updateDecorations(): void {
