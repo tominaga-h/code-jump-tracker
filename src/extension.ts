@@ -8,6 +8,7 @@ import {
   HistoryTreeDataProvider,
   HistoryTreeItem,
 } from "./historyTreeProvider";
+import { ActiveFileDecorationProvider } from "./activeFileDecorationProvider";
 
 export function activate(context: vscode.ExtensionContext): void {
   const historyManager = new HistoryManager(context.workspaceState);
@@ -20,11 +21,39 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const historyLogProvider = new HistoryTreeDataProvider(historyManager);
 
+  const historyTreeView = vscode.window.createTreeView(
+    "codeJumpTracker.historyLog",
+    { treeDataProvider: historyLogProvider }
+  );
+
+  const activeFileDecoration = new ActiveFileDecorationProvider();
+
+  function revealActiveFileInTree(): void {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.uri.scheme !== "file") {
+      activeFileDecoration.setActiveFile(undefined);
+      return;
+    }
+    const fsPath = editor.document.uri.fsPath;
+    activeFileDecoration.setActiveFile(fsPath);
+    const item = historyLogProvider.findItemByFilePath(fsPath);
+    if (item && historyTreeView.visible) {
+      historyTreeView.reveal(item, { select: true, focus: false });
+    }
+  }
+
   context.subscriptions.push(
-    vscode.window.registerTreeDataProvider(
-      "codeJumpTracker.historyLog",
-      historyLogProvider
-    ),
+    historyTreeView,
+    vscode.window.registerFileDecorationProvider(activeFileDecoration),
+    activeFileDecoration,
+
+    vscode.window.onDidChangeActiveTextEditor(() => {
+      revealActiveFileInTree();
+    }),
+
+    historyManager.onDidChange(() => {
+      revealActiveFileInTree();
+    }),
 
     vscode.commands.registerCommand(
       "codeJumpTracker.navigateToEntry",

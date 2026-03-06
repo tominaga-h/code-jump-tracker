@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import { HistoryEntry } from "./types";
 import { HistoryManager } from "./historyManager";
+import { TREE_URI_SCHEME } from "./activeFileDecorationProvider";
 
 const symbolKindIconMap: Record<number, string> = {
   [vscode.SymbolKind.File]: "symbol-file",
@@ -51,6 +53,12 @@ export class HistoryTreeItem extends vscode.TreeItem {
       this.iconPath = new vscode.ThemeIcon(iconId);
     }
 
+    this.resourceUri = vscode.Uri.from({
+      scheme: TREE_URI_SCHEME,
+      path: entry.filePath,
+      query: `index=${entryIndex}`,
+    });
+
     this.tooltip = `${entry.filePath}:${entry.line + 1}`;
 
     this.command = {
@@ -98,6 +106,10 @@ export class HistoryTreeDataProvider
     return element;
   }
 
+  getParent(): undefined {
+    return undefined;
+  }
+
   getChildren(): HistoryTreeItem[] {
     const history = this.historyManager.getHistory();
     const unique = this.historyManager.getUniqueLocations();
@@ -109,6 +121,13 @@ export class HistoryTreeDataProvider
       items.reverse();
     }
     return items;
+  }
+
+  findItemByFilePath(filePath: string): HistoryTreeItem | undefined {
+    const normalized = path.normalize(filePath);
+    return this.getChildren().find(
+      (item) => path.normalize(item.entry.filePath) === normalized
+    );
   }
 
   dispose(): void {
