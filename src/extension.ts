@@ -94,6 +94,14 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     }),
 
+    vscode.commands.registerCommand("codeJumpTracker.sortOrderDesc", () => {
+      historyLogProvider.toggleSortOrder();
+    }),
+
+    vscode.commands.registerCommand("codeJumpTracker.sortOrderAsc", () => {
+      historyLogProvider.toggleSortOrder();
+    }),
+
     vscode.commands.registerCommand("codeJumpTracker.clearAll", () => {
       historyManager.clearAll();
     }),

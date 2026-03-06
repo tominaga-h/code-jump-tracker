@@ -47,6 +47,18 @@
         "command": "codeJumpTracker.navigateToEntry",
         "title": "Navigate to Entry",
         "category": "Code Jump Tracker"
+      },
+      {
+        "command": "codeJumpTracker.sortOrderDesc",
+        "title": "Sort: Newest First",
+        "category": "Code Jump Tracker",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "codeJumpTracker.sortOrderAsc",
+        "title": "Sort: Oldest First",
+        "category": "Code Jump Tracker",
+        "icon": "$(arrow-up)"
       }
     ],
     "viewsContainers": {
@@ -89,9 +101,19 @@
       ],
       "view/title": [
         {
+          "command": "codeJumpTracker.sortOrderDesc",
+          "when": "view == codeJumpTracker.historyLog && codeJumpTracker.sortOrder == desc",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codeJumpTracker.sortOrderAsc",
+          "when": "view == codeJumpTracker.historyLog && codeJumpTracker.sortOrder == asc",
+          "group": "navigation@1"
+        },
+        {
           "command": "codeJumpTracker.clearAll",
           "when": "view == codeJumpTracker.historyLog",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ]
     },

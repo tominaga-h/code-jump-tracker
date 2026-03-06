@@ -71,11 +71,27 @@ export class HistoryTreeDataProvider
   readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
 
   private readonly disposable: vscode.Disposable;
+  private sortOrder: "asc" | "desc" = "desc";
 
   constructor(private readonly historyManager: HistoryManager) {
     this.disposable = this.historyManager.onDidChange(() => {
       this.onDidChangeTreeDataEmitter.fire();
     });
+    vscode.commands.executeCommand(
+      "setContext",
+      "codeJumpTracker.sortOrder",
+      this.sortOrder
+    );
+  }
+
+  toggleSortOrder(): void {
+    this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
+    vscode.commands.executeCommand(
+      "setContext",
+      "codeJumpTracker.sortOrder",
+      this.sortOrder
+    );
+    this.onDidChangeTreeDataEmitter.fire();
   }
 
   getTreeItem(element: HistoryTreeItem): vscode.TreeItem {
@@ -85,12 +101,14 @@ export class HistoryTreeDataProvider
   getChildren(): HistoryTreeItem[] {
     const history = this.historyManager.getHistory();
     const unique = this.historyManager.getUniqueLocations();
-    return unique
-      .map((entry) => {
-        const originalIndex = history.indexOf(entry);
-        return new HistoryTreeItem(entry, originalIndex);
-      })
-      .reverse();
+    const items = unique.map((entry) => {
+      const originalIndex = history.indexOf(entry);
+      return new HistoryTreeItem(entry, originalIndex);
+    });
+    if (this.sortOrder === "desc") {
+      items.reverse();
+    }
+    return items;
   }
 
   dispose(): void {
