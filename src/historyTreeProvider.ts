@@ -36,10 +36,7 @@ export class HistoryTreeItem extends vscode.TreeItem {
     public readonly entry: HistoryEntry,
     public readonly entryIndex: number
   ) {
-    const lineDisplay = `L${entry.line + 1}`;
-    const label = entry.symbolName
-      ? `${entry.symbolName} ${lineDisplay}`
-      : lineDisplay;
+    const label = entry.symbolName || entry.fileName;
     super(label, vscode.TreeItemCollapsibleState.None);
 
     this.description = entry.fileName;
