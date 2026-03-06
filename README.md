@@ -18,7 +18,7 @@ It provides intuitive history management in the sidebar -- similar to `pushd` / 
 
 ## Sidebar Views
 
-<img src="images/demo.png" height="600px" align="left" alt="Demo" style="margin-right: 20px" />
+<img src="images/demo.png" height="400px" align="left" alt="Demo" style="margin-right: 20px" />
 
 ### History Log
 
@@ -30,8 +30,6 @@ Displays a deduplicated list of visited locations.
 - Delete individual entries via the context menu
 - Toggle sort order (newest / oldest first)
 
-<div style="display: block;width: 100%;height: 55px"></div>
-
 ### File Group
 
 Displays history entries grouped by file in a tree view.
@@ -39,8 +37,6 @@ Displays history entries grouped by file in a tree view.
 - Root node: file name and entry count
 - Child nodes: entries within the file (sorted by line number)
 - Duplicate entries for the same file and line are automatically removed
-
-<div style="display: block;width: 100%;height: 110px"></div>
 
 ## Commands
 

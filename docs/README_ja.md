@@ -16,7 +16,7 @@ VS Code でのコードジャンプ履歴を視覚的に管理する拡張機能
 
 ## サイドバービュー
 
-<img src="../images/demo.png" height="600px" align="left" alt="デモ" style="margin-right: 20px" />
+<img src="../images/demo.png" height="400px" align="left" alt="デモ" style="margin-right: 20px" />
 
 ### History Log
 
@@ -28,8 +28,6 @@ VS Code でのコードジャンプ履歴を視覚的に管理する拡張機能
 - コンテキストメニューから個別削除が可能
 - ソート順（新着順 / 古い順）を切り替え可能
 
-<div style="display: block;width: 100%;height: 55px"></div>
-
 ### File Group
 
 ファイルごとにグループ化した履歴をツリー表示します。
@@ -37,8 +35,6 @@ VS Code でのコードジャンプ履歴を視覚的に管理する拡張機能
 - ルートノード: ファイル名とエントリ数
 - 子ノード: そのファイル内の各エントリ（行番号順）
 - 同一ファイル・同一行の重複は自動除去
-
-<div style="display: block;width: 100%;height: 110px"></div>
 
 ## コマンド一覧
 
