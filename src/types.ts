@@ -4,6 +4,7 @@ export interface HistoryEntry {
   line: number;
   column: number;
   symbolName: string;
+  symbolKind?: number;
   isManual: boolean;
   timestamp: number;
 }

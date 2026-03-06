@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
 
         const position = editor.selection.active;
-        const symbolName = await getSymbolName(
+        const symbolInfo = await getSymbolInfo(
           editor.document.uri,
           position
         );
@@ -70,7 +70,8 @@ export function activate(context: vscode.ExtensionContext): void {
           fileName: path.basename(editor.document.uri.fsPath),
           line: position.line,
           column: position.character,
-          symbolName,
+          symbolName: symbolInfo?.name ?? "",
+          symbolKind: symbolInfo?.kind,
           isManual: true,
           timestamp: Date.now(),
         };
@@ -130,31 +131,31 @@ async function openEntry(entry: HistoryEntry): Promise<void> {
   );
 }
 
-async function getSymbolName(
+async function getSymbolInfo(
   uri: vscode.Uri,
   position: vscode.Position
-): Promise<string> {
+): Promise<{ name: string; kind: vscode.SymbolKind } | undefined> {
   try {
     const symbols = await vscode.commands.executeCommand<
       vscode.DocumentSymbol[]
     >("vscode.executeDocumentSymbolProvider", uri);
     if (!symbols) {
-      return "";
+      return undefined;
     }
-    return findContainingSymbol(symbols, position) ?? "";
+    return findContainingSymbol(symbols, position);
   } catch {
-    return "";
+    return undefined;
   }
 }
 
 function findContainingSymbol(
   symbols: vscode.DocumentSymbol[],
   position: vscode.Position
-): string | undefined {
+): { name: string; kind: vscode.SymbolKind } | undefined {
   for (const symbol of symbols) {
     if (symbol.range.contains(position)) {
       const child = findContainingSymbol(symbol.children, position);
-      return child ?? symbol.name;
+      return child ?? { name: symbol.name, kind: symbol.kind };
     }
   }
   return undefined;

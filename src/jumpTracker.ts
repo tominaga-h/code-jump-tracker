@@ -85,7 +85,7 @@ export class JumpTracker implements vscode.Disposable {
 
   private async recordJump(editor: vscode.TextEditor): Promise<void> {
     const position = editor.selection.active;
-    const symbolName = await this.getSymbolName(
+    const symbolInfo = await this.getSymbolInfo(
       editor.document.uri,
       position
     );
@@ -95,7 +95,8 @@ export class JumpTracker implements vscode.Disposable {
       fileName: path.basename(editor.document.uri.fsPath),
       line: position.line,
       column: position.character,
-      symbolName,
+      symbolName: symbolInfo?.name ?? "",
+      symbolKind: symbolInfo?.kind,
       isManual: false,
       timestamp: Date.now(),
     };
@@ -105,31 +106,31 @@ export class JumpTracker implements vscode.Disposable {
     this.lastLine = entry.line;
   }
 
-  private async getSymbolName(
+  private async getSymbolInfo(
     uri: vscode.Uri,
     position: vscode.Position
-  ): Promise<string> {
+  ): Promise<{ name: string; kind: vscode.SymbolKind } | undefined> {
     try {
       const symbols = await vscode.commands.executeCommand<
         vscode.DocumentSymbol[]
       >("vscode.executeDocumentSymbolProvider", uri);
       if (!symbols) {
-        return "";
+        return undefined;
       }
-      return this.findContainingSymbol(symbols, position) ?? "";
+      return this.findContainingSymbol(symbols, position);
     } catch {
-      return "";
+      return undefined;
     }
   }
 
   private findContainingSymbol(
     symbols: vscode.DocumentSymbol[],
     position: vscode.Position
-  ): string | undefined {
+  ): { name: string; kind: vscode.SymbolKind } | undefined {
     for (const symbol of symbols) {
       if (symbol.range.contains(position)) {
         const child = this.findContainingSymbol(symbol.children, position);
-        return child ?? symbol.name;
+        return child ?? { name: symbol.name, kind: symbol.kind };
       }
     }
     return undefined;
