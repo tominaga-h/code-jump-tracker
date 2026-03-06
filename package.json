@@ -64,10 +64,6 @@
         {
           "id": "codeJumpTracker.historyLog",
           "name": "History Log"
-        },
-        {
-          "id": "codeJumpTracker.uniqueLocations",
-          "name": "Unique Locations"
         }
       ]
     },
@@ -94,7 +90,7 @@
       "view/title": [
         {
           "command": "codeJumpTracker.clearAll",
-          "when": "view == codeJumpTracker.historyLog || view == codeJumpTracker.uniqueLocations",
+          "when": "view == codeJumpTracker.historyLog",
           "group": "navigation"
         }
       ]

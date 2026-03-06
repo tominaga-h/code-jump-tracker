@@ -18,23 +18,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const gutterManager = new GutterManager(historyManager, context.extensionUri);
 
-  const historyLogProvider = new HistoryTreeDataProvider(
-    historyManager,
-    "history"
-  );
-  const uniqueLocationsProvider = new HistoryTreeDataProvider(
-    historyManager,
-    "unique"
-  );
+  const historyLogProvider = new HistoryTreeDataProvider(historyManager);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
       "codeJumpTracker.historyLog",
       historyLogProvider
-    ),
-    vscode.window.registerTreeDataProvider(
-      "codeJumpTracker.uniqueLocations",
-      uniqueLocationsProvider
     ),
 
     vscode.commands.registerCommand(
@@ -112,8 +101,7 @@ export function activate(context: vscode.ExtensionContext): void {
     jumpTracker,
     gutterManager,
     historyManager,
-    historyLogProvider,
-    uniqueLocationsProvider
+    historyLogProvider
   );
 }
 

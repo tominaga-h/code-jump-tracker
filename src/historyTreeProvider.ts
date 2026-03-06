@@ -72,10 +72,7 @@ export class HistoryTreeDataProvider
 
   private readonly disposable: vscode.Disposable;
 
-  constructor(
-    private readonly historyManager: HistoryManager,
-    private readonly mode: "history" | "unique"
-  ) {
+  constructor(private readonly historyManager: HistoryManager) {
     this.disposable = this.historyManager.onDidChange(() => {
       this.onDidChangeTreeDataEmitter.fire();
     });
@@ -87,19 +84,12 @@ export class HistoryTreeDataProvider
 
   getChildren(): HistoryTreeItem[] {
     const history = this.historyManager.getHistory();
-
-    if (this.mode === "unique") {
-      const unique = this.historyManager.getUniqueLocations();
-      return unique
-        .map((entry, i) => {
-          const originalIndex = history.indexOf(entry);
-          return new HistoryTreeItem(entry, originalIndex);
-        })
-        .reverse();
-    }
-
-    return [...history]
-      .map((entry, index) => new HistoryTreeItem(entry, index))
+    const unique = this.historyManager.getUniqueLocations();
+    return unique
+      .map((entry) => {
+        const originalIndex = history.indexOf(entry);
+        return new HistoryTreeItem(entry, originalIndex);
+      })
       .reverse();
   }
 
